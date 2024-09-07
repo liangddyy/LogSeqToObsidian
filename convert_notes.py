@@ -221,6 +221,9 @@ def update_assets(line: str, old_path: str, new_path: str):
         out = []
         name = match[1]
         old_relpath = match[2]
+        if old_relpath[:8] == "https://" or old_relpath[:7] == "http://":
+            print("Warning: skipping asset " + old_relpath + " as it's a web link")
+            return match[0]
         if old_relpath[:8] == "file:///":
             old_relpath = old_relpath[7:]
 
@@ -248,9 +251,10 @@ def update_assets(line: str, old_path: str, new_path: str):
                 + new_asset_path
                 + " failed, skipping it"
             )
-            new_relpath = old_relpath
+            # new_relpath = old_relpath
+            new_relpath = old_relpath.replace("\\", "/")
             # import ipdb; ipdb.set_trace()
-
+        new_relpath = new_relpath.replace("\\", "/")
         if os.path.splitext(old_asset_path)[1].lower() in [".png", ".jpg", ".jpeg", ".gif"]:
             out.append("!")
         out.append("[" + name + "]")
